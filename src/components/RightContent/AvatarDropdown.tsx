@@ -2,6 +2,7 @@ import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons
 import { Avatar, Menu, Spin, message } from 'antd';
 import { history, useModel } from 'umi';
 import HeaderDropdown from '../HeaderDropdown';
+import { layoutActionRef } from '@/app';
 import { createService, isSuccess } from '@/utils/requestUtils';
 import { storageClear } from '@/utils/tokenUtils';
 import { nickNameAndAvatar } from '@/utils/constant';
@@ -14,14 +15,16 @@ const AvatarDropdown = () => {
   async function handleLogout() {
     const res = await logout();
     if (isSuccess(res)) {
-      await setInitialState((s: any) => ({
+      setInitialState((s: any) => ({
         ...s,
         userInfo: {},
         permissions: [],
         menuData: [],
-      }));
-      storageClear();
-      history.push('/user/login');
+      })).then(() => {
+        history.push('/user/login');
+        layoutActionRef?.current?.reload?.();
+        storageClear();
+      });
     } else {
       message.info(res?.statusMessage);
     }

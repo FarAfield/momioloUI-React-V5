@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import { loginPageConfig } from '@/utils/constant';
 import { createService, isSuccess } from '@/utils/requestUtils';
 import { isLogin, setToken } from '@/utils/tokenUtils';
+import { layoutActionRef } from '@/app';
 import styles from './index.less';
 
 const login = createService('/account/login', 'post');
@@ -31,13 +32,15 @@ const Login: React.FC = () => {
     setToken(token);
     const { userInfo, permissions }: any = await initialState?.fetchUserInfo?.();
     const menuData = await initialState?.fetchUserMenu?.();
-    await setInitialState((s: any) => ({
+    setInitialState((s: any) => ({
       ...s,
       userInfo,
       permissions,
       menuData,
-    }));
-    history.push('/Welcome');
+    })).then(() => {
+      layoutActionRef?.current?.reload?.();
+      history.push('/Welcome');
+    });
   };
 
   const onFinish = async ({

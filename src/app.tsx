@@ -1,5 +1,6 @@
 import { PageLoading } from '@ant-design/pro-layout';
 import { history, RequestConfig } from 'umi';
+import { createRef } from 'react';
 import { message } from 'antd';
 import { BankOutlined } from '@ant-design/icons';
 import RightContent from '@/components/RightContent';
@@ -164,11 +165,14 @@ export const request: RequestConfig = {
  *   布局组件layout
  *
  */
+export const layoutActionRef = createRef<{ reload: () => void }>();
 //  https://umijs.org/zh-CN/plugins/plugin-layout#layout
 //  https://beta-pro.ant.design/docs/advanced-menu-cn
 //  https://procomponents.ant.design/components/layout
 export const layout = ({ initialState }: any) => {
   return {
+    actionRef: layoutActionRef,
+    pure: !initialState?.menuData?.length,
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {
