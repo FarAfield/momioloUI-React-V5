@@ -23,21 +23,21 @@ const Login: React.FC = () => {
   /** 如果已登录，直接跳转到首页*/
   useEffect(() => {
     if (isLogin()) {
-      history.push('/');
+      history.push('/Welcome');
     }
   }, []);
 
   const loginSuccess = async (token: string) => {
     setToken(token);
-    const { userInfo, permissions } = await initialState?.fetchUserInfo?.();
+    const { userInfo, permissions }: any = await initialState?.fetchUserInfo?.();
     const menuData = await initialState?.fetchUserMenu?.();
-    await setInitialState((s: object) => ({
+    await setInitialState((s: any) => ({
       ...s,
       userInfo,
       permissions,
       menuData,
     }));
-    history.push('/');
+    history.push('/Welcome');
   };
 
   const onFinish = async ({

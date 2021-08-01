@@ -4,6 +4,7 @@ import { message } from 'antd';
 import { BankOutlined } from '@ant-design/icons';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
+import logo from '../public/logo-white.svg';
 import { requestErrorCodeConfig, proSettings } from '@/utils/constant';
 import { isLogin, getToken, storageClear } from '@/utils/tokenUtils';
 import { createService, transformResponse } from '@/utils/requestUtils';
@@ -165,6 +166,7 @@ export const request: RequestConfig = {
  */
 //  https://umijs.org/zh-CN/plugins/plugin-layout#layout
 //  https://beta-pro.ant.design/docs/advanced-menu-cn
+//  https://procomponents.ant.design/components/layout
 export const layout = ({ initialState }: any) => {
   return {
     rightContentRender: () => <RightContent />,
@@ -181,12 +183,14 @@ export const layout = ({ initialState }: any) => {
       }
     },
     links: [],
+    logo,
+    onMenuHeaderClick: () => history.push('/Welcome'),
     menuHeaderRender: undefined,
     menu: {
       // 每次initialState.menuData变化就重新读取菜单数据
-      params: initialState.menuData,
+      params: initialState?.menuData,
       request: async () => {
-        return initialState.menuData;
+        return initialState?.menuData || [];
       },
     },
     ...initialState?.settings,

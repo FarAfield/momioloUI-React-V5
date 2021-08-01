@@ -1,24 +1,33 @@
-import { useCallback, useMemo } from 'react';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Menu, Spin } from 'antd';
+import { Avatar, Menu, Spin, message } from 'antd';
 import { history, useModel } from 'umi';
 import HeaderDropdown from '../HeaderDropdown';
-import { createService } from '@/utils/requestUtils';
+import { createService, isSuccess } from '@/utils/requestUtils';
 import { storageClear } from '@/utils/tokenUtils';
 import { nickNameAndAvatar } from '@/utils/constant';
 import styles from './index.less';
 
 const logout = createService('/account/logout', 'post');
 const AvatarDropdown = () => {
-  const { initialState } = useModel('@@initialState');
+  const { initialState, setInitialState } = useModel('@@initialState');
 
   async function handleLogout() {
-    await logout();
-    storageClear();
-    history.push('/user/login');
+    const res = await logout();
+    if (isSuccess(res)) {
+      await setInitialState((s: any) => ({
+        ...s,
+        userInfo: {},
+        permissions: [],
+        menuData: [],
+      }));
+      storageClear();
+      history.push('/user/login');
+    } else {
+      message.info(res?.statusMessage);
+    }
   }
 
-  const onMenuClick = useCallback(async ({ key }: any) => {
+  const onMenuClick = async ({ key }: any) => {
     switch (key) {
       case 'center': {
         history.push('/user/center');
@@ -29,19 +38,13 @@ const AvatarDropdown = () => {
         break;
       }
       case 'logout': {
-        // setInitialState((s: object) => ({
-        //   ...s,
-        //   userInfo: {},
-        //   permissions: [],
-        //   menuData: [],
-        // }));
         handleLogout();
         break;
       }
       default:
         break;
     }
-  }, []);
+  };
 
   const loading = (
     <span className={`${styles.action} ${styles.account}`}>
@@ -57,25 +60,22 @@ const AvatarDropdown = () => {
   if (!initialState?.userInfo?.accountSid) {
     return loading;
   }
-  const menuHeaderDropdown = useMemo(
-    () => (
-      <Menu className={styles.menu} onClick={(e) => onMenuClick(e)}>
-        <Menu.Item key="center">
-          <UserOutlined />
-          个人中心
-        </Menu.Item>
-        <Menu.Item key="settings">
-          <SettingOutlined />
-          个人设置
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item key="logout">
-          <LogoutOutlined />
-          退出登录
-        </Menu.Item>
-      </Menu>
-    ),
-    [],
+  const menuHeaderDropdown = (
+    <Menu className={styles.menu} onClick={(e) => onMenuClick(e)}>
+      <Menu.Item key="center">
+        <UserOutlined />
+        个人中心
+      </Menu.Item>
+      <Menu.Item key="settings">
+        <SettingOutlined />
+        个人设置
+      </Menu.Item>
+      <Menu.Divider />
+      <Menu.Item key="logout">
+        <LogoutOutlined />
+        退出登录
+      </Menu.Item>
+    </Menu>
   );
   return (
     <HeaderDropdown overlay={menuHeaderDropdown}>
