@@ -22,6 +22,7 @@ const AvatarDropdown = () => {
         menuData: [],
       })).then(() => {
         history.push('/user/login');
+        // 退出登录，刷新菜单
         layoutActionRef?.current?.reload?.();
         storageClear();
       });

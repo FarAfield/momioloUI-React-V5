@@ -5,7 +5,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import md5 from 'md5';
 import logo from '../../../../public/logo.svg';
 import Footer from '@/components/Footer';
-import { loginPageConfig } from '@/utils/constant';
+import { loginPageConfig, homePath } from '@/utils/constant';
 import { createService, isSuccess } from '@/utils/requestUtils';
 import { isLogin, setToken } from '@/utils/tokenUtils';
 import { layoutActionRef } from '@/app';
@@ -24,7 +24,7 @@ const Login: React.FC = () => {
   /** 如果已登录，直接跳转到首页*/
   useEffect(() => {
     if (isLogin()) {
-      history.push('/Welcome');
+      history.push(homePath);
     }
   }, []);
 
@@ -38,8 +38,9 @@ const Login: React.FC = () => {
       permissions,
       menuData,
     })).then(() => {
+      // 登陆成功后刷新菜单数据
       layoutActionRef?.current?.reload?.();
-      history.push('/Welcome');
+      history.push(homePath);
     });
   };
 

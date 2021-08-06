@@ -6,7 +6,7 @@ import { BankOutlined } from '@ant-design/icons';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import logo from '../public/logo-white.svg';
-import { requestErrorCodeConfig, proSettings } from '@/utils/constant';
+import { requestErrorCodeConfig, proSettings, homePath } from '@/utils/constant';
 import { isLogin, getToken, storageClear } from '@/utils/tokenUtils';
 import { createService, transformResponse } from '@/utils/requestUtils';
 
@@ -172,7 +172,7 @@ export const layoutActionRef = createRef<{ reload: () => void }>();
 export const layout = ({ initialState }: any) => {
   return {
     actionRef: layoutActionRef,
-    pure: !initialState?.menuData?.length,
+    pure: !initialState?.menuData?.length, // 若无菜单数据则隐藏布局
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {
@@ -188,7 +188,7 @@ export const layout = ({ initialState }: any) => {
     },
     links: [],
     logo,
-    onMenuHeaderClick: () => history.push('/Welcome'),
+    onMenuHeaderClick: () => history.push(homePath),
     menuHeaderRender: undefined,
     menu: {
       // 每次initialState.menuData变化就重新读取菜单数据

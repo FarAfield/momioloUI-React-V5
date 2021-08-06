@@ -75,8 +75,6 @@ export const requestErrorCodeConfig = {
   TOKEN_INVALID_ERROR: '10002',
   UNAUTHORIZED_ERROR: '10003',
 };
-// 超级管理员账号名
-export const superAdminName = 'SysAdmin';
 // 全局样式配置
 export const proSettings = {
   navTheme: 'dark',
@@ -96,10 +94,6 @@ export const loginPageConfig = {
   title: 'Momiolo',
   loginDescription: 'Momiolo 是极具个性化的 Web 中台系统',
 };
-// 登陆成功提示语
-export const loginSuccessTip = '🎉 🎉 🎉  欢迎登陆！';
-// 退出登录成功提示语
-export const logoutSuccessTip = '已成功退出登录！';
 // 版权配置
 export const copyRightConfig = [
   { title: '@react', href: 'https://react.docschina.org/docs/getting-started.html' },
@@ -113,4 +107,5 @@ export const nickNameAndAvatar = [
   '管理员',
   'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
 ];
-
+// 默认首页路径
+export const homePath = '/Welcome';
