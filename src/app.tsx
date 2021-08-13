@@ -5,10 +5,10 @@ import { message } from 'antd';
 import { BankOutlined } from '@ant-design/icons';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import logo from '../public/logo-white.svg';
 import { requestErrorCodeConfig, proSettings, homePath } from '@/utils/constant';
 import { isLogin, getToken, storageClear } from '@/utils/tokenUtils';
 import { createService, transformResponse } from '@/utils/requestUtils';
+import logo from '../public/logo-white.svg';
 
 const loginPath = '/user/login';
 const findCurrentInfo = createService('/account/findCurrentInfo');
@@ -171,7 +171,7 @@ export const layoutActionRef = createRef<{ reload: () => void }>();
 //  https://procomponents.ant.design/components/layout
 export const layout = ({ initialState }: any) => {
   return {
-    actionRef: layoutActionRef,
+    actionRef: layoutActionRef,  // 使用此ref用于刷新菜单数据（登陆成功以及退出登录调用）
     pure: !initialState?.menuData?.length, // 若无菜单数据则隐藏布局
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
