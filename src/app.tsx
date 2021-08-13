@@ -31,6 +31,8 @@ function formatMenu(menuData: any[], parentPath: string = '') {
       item.icon = item.resourceIcon;
       // 路由则隐藏
       item.hideInMenu = item.resourceType === 2;
+      // 走统一路由权限过滤
+      item.access = 'routeFilter';
       if (item.children?.length) {
         item.children = formatMenu(item.children, path);
       }
