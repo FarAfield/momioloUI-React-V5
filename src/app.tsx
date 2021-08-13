@@ -2,12 +2,12 @@ import { PageLoading } from '@ant-design/pro-layout';
 import { history, RequestConfig } from 'umi';
 import { createRef } from 'react';
 import { message } from 'antd';
-import { BankOutlined } from '@ant-design/icons';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { requestErrorCodeConfig, proSettings, homePath } from '@/utils/constant';
 import { isLogin, getToken, storageClear } from '@/utils/tokenUtils';
 import { createService, transformResponse } from '@/utils/requestUtils';
+import { getIconByName } from '@/utils/support';
 import logo from '../public/logo-white.svg';
 
 const loginPath = '/user/login';
@@ -20,14 +20,7 @@ async function fetchUserInfo() {
     permissions: userInfo.permissions || [],
   };
 }
-function getIcon(name: any) {
-  switch (name) {
-    case 'BankOutlined':
-      return <BankOutlined />;
-    default:
-      return <BankOutlined />;
-  }
-}
+
 function formatMenu(menuData: any[], parentPath: string = '') {
   return menuData.map((item: any) => {
     // 非按钮
@@ -35,7 +28,7 @@ function formatMenu(menuData: any[], parentPath: string = '') {
       const path = `${parentPath}/${item.resourceCode}`;
       item.path = path;
       item.name = `${item.resourceName}`;
-      item.icon = getIcon(item.resourceIcon);
+      item.icon = item.resourceIcon;
       // 路由则隐藏
       item.hideInMenu = item.resourceType === 2;
       if (item.children?.length) {
@@ -171,7 +164,7 @@ export const layoutActionRef = createRef<{ reload: () => void }>();
 //  https://procomponents.ant.design/components/layout
 export const layout = ({ initialState }: any) => {
   return {
-    actionRef: layoutActionRef,  // 使用此ref用于刷新菜单数据（登陆成功以及退出登录调用）
+    actionRef: layoutActionRef, // 使用此ref用于刷新菜单数据（登陆成功以及退出登录调用）
     pure: !initialState?.menuData?.length, // 若无菜单数据则隐藏布局
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
@@ -190,6 +183,22 @@ export const layout = ({ initialState }: any) => {
     logo,
     onMenuHeaderClick: () => history.push(homePath),
     menuHeaderRender: undefined,
+    menuItemRender: (item: any, dom: any) => {
+      return (
+        <div onClick={() => history.push(item.path)}>
+          {getIconByName(item.icon)}
+          {dom}
+        </div>
+      );
+    },
+    subMenuItemRender: (item: any, dom: any) => {
+      return (
+        <div>
+          {getIconByName(item.icon)}
+          {dom}
+        </div>
+      );
+    },
     menu: {
       // 每次initialState.menuData变化就重新读取菜单数据
       params: initialState?.menuData,
