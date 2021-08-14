@@ -160,11 +160,23 @@ export const request: RequestConfig = {
  *   布局组件layout
  *
  */
+const getMenuPath = (array: any[], result: any[]) => {
+  array.forEach((item: any) => {
+    if (item.resourceType !== 3) {
+      result.push(item.path);
+      if (item.children?.length) {
+        getMenuPath(item.children, result);
+      }
+    }
+  });
+};
 export const layoutActionRef = createRef<{ reload: () => void }>();
 //  https://umijs.org/zh-CN/plugins/plugin-layout#layout
 //  https://beta-pro.ant.design/docs/advanced-menu-cn
 //  https://procomponents.ant.design/components/layout
 export const layout = ({ initialState }: any) => {
+  const routePathList: Array<any> = ['/Welcome', '/user/center', '/user/setting']; //无需鉴权页面路径
+  getMenuPath(initialState?.menuData || [], routePathList);
   return {
     actionRef: layoutActionRef, // 使用此ref用于刷新菜单数据（登陆成功以及退出登录调用）
     pure: !initialState?.menuData?.length, // 若无菜单数据则隐藏布局
@@ -175,10 +187,16 @@ export const layout = ({ initialState }: any) => {
     },
     footerRender: () => <Footer />,
     onPageChange: () => {
-      const { location } = history;
+      const {
+        location: { pathname },
+      } = history;
       // 如果没有登录，重定向到 login
-      if (!isLogin() && location.pathname !== loginPath) {
+      if (!isLogin() && pathname !== loginPath) {
         history.replace(loginPath);
+      }
+      // 如果无权访问或者路径不匹配，到403页面
+      if (!routePathList.includes(pathname)) {
+        history.push('/Exception/Exception403');
       }
     },
     links: [],
