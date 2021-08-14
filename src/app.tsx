@@ -1,13 +1,13 @@
-import { PageLoading } from '@ant-design/pro-layout';
-import { history, RequestConfig } from 'umi';
-import { createRef } from 'react';
-import { message } from 'antd';
+import {PageLoading} from '@ant-design/pro-layout';
+import {history, RequestConfig} from 'umi';
+import {createRef} from 'react';
+import {message} from 'antd';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import { requestErrorCodeConfig, proSettings, homePath } from '@/utils/constant';
-import { isLogin, getToken, storageClear } from '@/utils/tokenUtils';
-import { createService, transformResponse } from '@/utils/requestUtils';
-import { getIconByName } from '@/utils/support';
+import {homePath, proSettings, requestErrorCodeConfig} from '@/utils/constant';
+import {getToken, isLogin, storageClear} from '@/utils/tokenUtils';
+import {createService, transformResponse} from '@/utils/requestUtils';
+import {getIconByName} from '@/utils/support';
 import logo from '../public/logo-white.svg';
 
 const loginPath = '/user/login';
@@ -195,7 +195,7 @@ export const layout = ({ initialState }: any) => {
         history.replace(loginPath);
       }
       // 如果无权访问或者路径不匹配，到403页面
-      if (!routePathList.includes(pathname)) {
+      if (isLogin() && !routePathList.includes(pathname)) {
         history.push('/Exception/Exception403');
       }
     },
