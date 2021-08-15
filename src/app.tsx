@@ -1,5 +1,5 @@
 import {PageLoading} from '@ant-design/pro-layout';
-import {history, RequestConfig} from 'umi';
+import {history} from 'umi';
 import {createRef} from 'react';
 import {message} from 'antd';
 import RightContent from '@/components/RightContent';
@@ -146,7 +146,7 @@ const ResponseInterceptor = async (response: any) => {
   }
   return response;
 };
-export const request: RequestConfig = {
+export const request = {
   errorHandler,
   requestInterceptors: [RequestInterceptor],
   responseInterceptors: [ResponseInterceptor],
@@ -183,7 +183,7 @@ export const layout = ({ initialState }: any) => {
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     waterMarkProps: {
-      content: initialState?.currentUser?.accountName,
+      content: initialState?.userInfo?.accountName,
     },
     footerRender: () => <Footer />,
     onPageChange: () => {

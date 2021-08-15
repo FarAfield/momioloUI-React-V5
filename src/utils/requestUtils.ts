@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { message } from 'antd';
-import { request } from 'umi';
+import {useState} from 'react';
+import {message} from 'antd';
+import {request} from 'umi';
+
 /**
  *  判断接口返回是否成功
  */
@@ -59,8 +60,8 @@ export const useTableFetch = (service: any, options: optionsProps = {}) => {
   const [loading, setLoading] = useState(false);
   const [params, setParams] = useState({});
   async function run(p: any = {}) {
-    const { current = 1, size = 10, ...rest } = p;
-    let finalParams = { current, size, ...rest, ...extraParams };
+    const { current: reqCurrent = 1, size: reqSize = 10, ...rest } = p;
+    let finalParams = { current: reqCurrent, size: reqSize, ...rest, ...extraParams };
     if (transformParam) {
       finalParams = transformParam(finalParams);
     }
@@ -72,11 +73,21 @@ export const useTableFetch = (service: any, options: optionsProps = {}) => {
       response = transformResult(response);
     }
     if (isSuccess(response)) {
-      const { records = [], total = 0, current = 1, size = 10 } = response.data;
+      const {
+        records = [],
+        total: resTotal = 0,
+        current: resCurrent = 1,
+        size: resSize = 10,
+      } = response.data;
       setList(records);
-      setCurrent(current);
-      setPageSize(size);
-      setTotal(total);
+      setCurrent(resCurrent);
+      setPageSize(resSize);
+      setTotal(resTotal);
+    } else {
+      setList([]);
+      setCurrent(1);
+      setPageSize(10);
+      setTotal(0);
     }
   }
   function refresh() {
@@ -118,7 +129,8 @@ export const createService = (url: string, method: string = 'get') => {
 export const transformResponse = (response: any, showError: boolean = false) => {
   if (isSuccess(response)) {
     return response.data;
-  } else if (showError) {
+  }
+  if (showError) {
     message.error(response?.statusMessage);
   }
   return null;

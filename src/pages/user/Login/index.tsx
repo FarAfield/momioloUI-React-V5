@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Link, history, useModel } from 'umi';
-import { Alert, Button, Form, Input, Checkbox } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import React, {useEffect, useState} from 'react';
+import {history, Link, useModel} from 'umi';
+import {Alert, Button, Checkbox, Form, Input, message} from 'antd';
+import {LockOutlined, UserOutlined} from '@ant-design/icons';
 import md5 from 'md5';
 import logo from '../../../../public/logo.svg';
 import Footer from '@/components/Footer';
-import { loginPageConfig, homePath } from '@/utils/constant';
-import { createService, isSuccess } from '@/utils/requestUtils';
-import { isLogin, setToken } from '@/utils/tokenUtils';
-import { layoutActionRef } from '@/app';
+import {homePath, loginPageConfig} from '@/utils/constant';
+import {createService, isSuccess} from '@/utils/requestUtils';
+import {isLogin, setToken} from '@/utils/tokenUtils';
+import {layoutActionRef} from '@/app';
 import styles from './index.less';
 
 const login = createService('/account/login', 'post');
@@ -30,8 +30,10 @@ const Login: React.FC = () => {
 
   const loginSuccess = async (token: string) => {
     setToken(token);
+    setLoading(true);
     const { userInfo, permissions }: any = await initialState?.fetchUserInfo?.();
     const menuData = await initialState?.fetchUserMenu?.();
+    setLoading(false);
     setInitialState((s: any) => ({
       ...s,
       userInfo,
@@ -87,9 +89,10 @@ const Login: React.FC = () => {
             >
               <Input
                 size="large"
-                prefix={<UserOutlined className={styles.prefixIcon} />}
-                placeholder="请输入登录账号"
+                addonBefore={<UserOutlined className={styles.prefixIcon} />}
+                placeholder="请输入登录账号（momioloGuest）"
                 maxLength={20}
+                autoComplete="off"
               />
             </Form.Item>
             <Form.Item
@@ -101,10 +104,11 @@ const Login: React.FC = () => {
             >
               <Input
                 size="large"
-                prefix={<LockOutlined className={styles.prefixIcon} />}
+                addonBefore={<LockOutlined className={styles.prefixIcon} />}
                 type="password"
-                placeholder="请输入登录密码"
+                placeholder="请输入登录密码（momioloGuest）"
                 maxLength={20}
+                autoComplete="off"
               />
             </Form.Item>
             {errorMessage && !loading && <LoginMessage content={errorMessage} />}
@@ -122,7 +126,7 @@ const Login: React.FC = () => {
           </Form>
           <div className={styles.action}>
             <Checkbox disabled>记住账号</Checkbox>
-            <Link to="/user/login">忘记密码</Link>
+            <a onClick={() => message.info('敬请期待！')}>忘记密码</a>
           </div>
         </div>
       </div>
