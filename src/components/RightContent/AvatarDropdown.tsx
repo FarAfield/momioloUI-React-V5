@@ -1,7 +1,6 @@
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Menu, Spin, message } from 'antd';
+import { Avatar, Menu, Spin, message, Dropdown } from 'antd';
 import { history, useModel } from 'umi';
-import HeaderDropdown from '../HeaderDropdown';
 import { layoutActionRef } from '@/app';
 import { createService, isSuccess } from '@/utils/requestUtils';
 import { storageClear } from '@/utils/tokenUtils';
@@ -82,7 +81,7 @@ const AvatarDropdown = () => {
     </Menu>
   );
   return (
-    <HeaderDropdown overlay={menuHeaderDropdown}>
+    <Dropdown overlay={menuHeaderDropdown} placement="bottomLeft">
       <span className={`${styles.action} ${styles.account}`}>
         <Avatar
           size="small"
@@ -92,7 +91,7 @@ const AvatarDropdown = () => {
         />
         <span>{initialState?.userInfo?.userName || nickNameAndAvatar[0]}</span>
       </span>
-    </HeaderDropdown>
+    </Dropdown>
   );
 };
 

@@ -1,25 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { history, Link, useModel } from 'umi';
-import { Alert, Button, Checkbox, Form, Input, message } from 'antd';
+import { Button, Checkbox, Form, Input, message, notification } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import md5 from 'md5';
-import logo from '../../../../public/logo.svg';
 import Footer from '@/components/Footer';
 import { homePath, loginPageConfig } from '@/utils/constant';
 import { createService, isSuccess } from '@/utils/requestUtils';
 import { isLogin, setToken } from '@/utils/tokenUtils';
 import { layoutActionRef } from '@/app';
+import logo from '../../../../public/logo.svg';
 import styles from './index.less';
 
 const login = createService('/account/login', 'post');
-const LoginMessage: React.FC<{
-  content: string | undefined;
-}> = ({ content }) => <Alert className={styles.alert} message={content} type="error" showIcon />;
-
-const Login: React.FC = () => {
+const Login = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(undefined);
 
   /** 如果已登录，直接跳转到首页*/
   useEffect(() => {
@@ -42,17 +37,15 @@ const Login: React.FC = () => {
     })).then(() => {
       // 登陆成功后刷新菜单数据
       layoutActionRef?.current?.reload?.();
+      // 给超级管理员一个惊喜
+      if(userInfo.accountName === 'SysAdmin'){
+        message.success('尊敬的超级管理员，欢迎使用！')
+      }
       history.push(homePath);
     });
   };
 
-  const onFinish = async ({
-    accountName,
-    accountPassword,
-  }: {
-    accountName: string;
-    accountPassword: string;
-  }) => {
+  const onFinish = async ({ accountName, accountPassword }: any) => {
     setLoading(true);
     const response = await login({
       accountName,
@@ -60,10 +53,11 @@ const Login: React.FC = () => {
     });
     setLoading(false);
     if (!isSuccess(response)) {
-      setErrorMessage(response.statusMessage);
-      setTimeout(() => setErrorMessage(undefined), 3000);
+      notification.error({
+        message: response.statusMessage,
+      });
     } else {
-      loginSuccess(response?.data?.token);
+      loginSuccess(response.data?.token);
     }
   };
   return (
@@ -90,7 +84,7 @@ const Login: React.FC = () => {
               <Input
                 size="large"
                 addonBefore={<UserOutlined className={styles.prefixIcon} />}
-                placeholder="请输入登录账号（momioloGuest）"
+                placeholder="请输入登录账号（momiolo）"
                 maxLength={20}
                 autoComplete="off"
               />
@@ -106,12 +100,11 @@ const Login: React.FC = () => {
                 size="large"
                 addonBefore={<LockOutlined className={styles.prefixIcon} />}
                 type="password"
-                placeholder="请输入登录密码（momioloGuest）"
+                placeholder="请输入登录密码（momiolo）"
                 maxLength={20}
                 autoComplete="off"
               />
             </Form.Item>
-            {errorMessage && !loading && <LoginMessage content={errorMessage} />}
             <Form.Item>
               <Button
                 size="large"
@@ -126,7 +119,7 @@ const Login: React.FC = () => {
           </Form>
           <div className={styles.action}>
             <Checkbox disabled>记住账号</Checkbox>
-            <a onClick={() => message.info('敬请期待！')}>忘记密码</a>
+            <a onClick={() => message.info('敬请期待！')}>注册账号</a>
           </div>
         </div>
       </div>
