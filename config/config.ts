@@ -28,7 +28,7 @@ export default defineConfig({
   },
   // Theme for antd: https://ant.design/docs/react/customize-theme-cn
   theme: {
-    'primary-color': '#1890ff',
+    'primary-color': '#13C2C2',
   },
   // esbuild is father build tools
   // https://umijs.org/plugins/plugin-esbuild

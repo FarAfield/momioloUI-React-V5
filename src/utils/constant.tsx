@@ -78,7 +78,7 @@ export const requestErrorCodeConfig = {
 // 全局样式配置
 export const proSettings = {
   navTheme: 'dark',
-  primaryColor: '#1890ff', // 拂晓蓝
+  primaryColor: '#13C2C2',
   layout: 'side', // side top
   contentWidth: 'Fluid', // 默认Fluid，layout为top时可设置为Fixed
   fixedHeader: true, // 固定头部
@@ -96,9 +96,9 @@ export const loginPageConfig = {
 };
 // 版权配置
 export const copyRightConfig = [
-  { title: '@react', href: 'https://react.docschina.org/docs/getting-started.html' },
+  { title: 'react', href: 'https://react.docschina.org/docs/getting-started.html' },
   { title: <GithubOutlined />, href: 'https://github.com/FarAfield' },
-  { title: '@vue', href: 'https://cn.vuejs.org/v2/guide/' },
+  { title: 'vue', href: 'https://vue3js.cn/docs/zh/' },
 ];
 // 版权信息
 export const copyRight = '版权所有';
