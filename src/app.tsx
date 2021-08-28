@@ -1,13 +1,13 @@
-import {PageLoading} from '@ant-design/pro-layout';
-import {history} from 'umi';
-import {createRef} from 'react';
-import {message} from 'antd';
+import { PageLoading } from '@ant-design/pro-layout';
+import { history } from 'umi';
+import { createRef } from 'react';
+import { message } from 'antd';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import {homePath, proSettings, requestErrorCodeConfig} from '@/utils/constant';
-import {getToken, isLogin, storageClear} from '@/utils/tokenUtils';
-import {createService, transformResponse} from '@/utils/requestUtils';
-import {getIconByName} from '@/utils/support';
+import { homePath, proSettings, requestErrorCodeConfig } from '@/utils/constant';
+import { getToken, isLogin, storageClear } from '@/utils/tokenUtils';
+import { createService, transformResponse } from '@/utils/requestUtils';
+import { getIconByName } from '@/utils/support';
 import logo from '../public/logo-white.svg';
 
 const loginPath = '/user/login';

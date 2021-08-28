@@ -1,6 +1,6 @@
-import {useState} from 'react';
-import {message} from 'antd';
-import {request} from 'umi';
+import { useState } from 'react';
+import { message } from 'antd';
+import { request } from 'umi';
 
 /**
  *  判断接口返回是否成功

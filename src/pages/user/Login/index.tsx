@@ -1,14 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import {history, Link, useModel} from 'umi';
-import {Alert, Button, Checkbox, Form, Input, message} from 'antd';
-import {LockOutlined, UserOutlined} from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { history, Link, useModel } from 'umi';
+import { Alert, Button, Checkbox, Form, Input, message } from 'antd';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import md5 from 'md5';
 import logo from '../../../../public/logo.svg';
 import Footer from '@/components/Footer';
-import {homePath, loginPageConfig} from '@/utils/constant';
-import {createService, isSuccess} from '@/utils/requestUtils';
-import {isLogin, setToken} from '@/utils/tokenUtils';
-import {layoutActionRef} from '@/app';
+import { homePath, loginPageConfig } from '@/utils/constant';
+import { createService, isSuccess } from '@/utils/requestUtils';
+import { isLogin, setToken } from '@/utils/tokenUtils';
+import { layoutActionRef } from '@/app';
 import styles from './index.less';
 
 const login = createService('/account/login', 'post');

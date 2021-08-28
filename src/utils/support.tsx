@@ -1,4 +1,4 @@
-import {BankOutlined} from '@ant-design/icons';
+import { BankOutlined } from '@ant-design/icons';
 
 export function getIconByName(name: any) {
   switch (name) {
