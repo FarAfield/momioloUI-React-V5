@@ -38,7 +38,7 @@ const Login = () => {
       // 登陆成功后刷新菜单数据
       layoutActionRef?.current?.reload?.();
       // 给超级管理员一个惊喜
-      if(userInfo.accountName === 'SysAdmin'){
+      if(userInfo.accountName === 'momiolo'){
         message.success('尊敬的超级管理员，欢迎使用！')
       }
       history.push(homePath);

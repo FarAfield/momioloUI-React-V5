@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { message } from 'antd';
 import { request } from 'umi';
 
+const { REACT_APP_ENV } = process.env;
+const isDev = REACT_APP_ENV === 'dev';
 /**
  *  判断接口返回是否成功
  */
@@ -66,6 +68,9 @@ export const useTableFetch = (service: any, options: optionsProps = {}) => {
       finalParams = transformParam(finalParams);
     }
     setParams(finalParams);
+    if (isDev) {
+      console.log('run查询执行参数：', finalParams);
+    }
     setLoading(true);
     let response: any = await service(finalParams);
     setLoading(false);
@@ -90,8 +95,12 @@ export const useTableFetch = (service: any, options: optionsProps = {}) => {
       setTotal(0);
     }
   }
-  function refresh() {
-    run(params);
+  function refresh(isGoFirstPage = false) {
+    if (isGoFirstPage) {
+      run({ ...params, current: 1, size: 10 });
+    } else {
+      run(params);
+    }
   }
   return {
     list,

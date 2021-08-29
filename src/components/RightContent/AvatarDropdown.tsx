@@ -33,11 +33,13 @@ const AvatarDropdown = () => {
   const onMenuClick = async ({ key }: any) => {
     switch (key) {
       case 'center': {
-        history.push('/user/center');
+        message.info('敬请期待！');
+        //history.push('/user/center');
         break;
       }
       case 'settings': {
-        history.push('/user/setting');
+        message.info('敬请期待！');
+        //history.push('/user/setting');
         break;
       }
       case 'logout': {
