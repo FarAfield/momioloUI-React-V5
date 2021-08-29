@@ -60,12 +60,15 @@ const CommonSearchForm = (props: any) => {
   const [form] = propsForm || Form.useForm();
   const { setFieldsValue, resetFields } = form;
 
-  // 存在初始值，则赋值且触发查询
+  // 存在初始值，则赋值查询，否则只查询
   useEffect(() => {
     if (initialValues && Object.keys(initialValues).length) {
       setFieldsValue(initialValues);
       handleSubmit(initialValues);
       run?.({ ...initialValues, ...extraValues, ...sortValues, ...filterValues });
+    } else {
+      handleSubmit();
+      run?.({...extraValues, ...sortValues, ...filterValues})
     }
   }, []);
 
@@ -92,7 +95,7 @@ const CommonSearchForm = (props: any) => {
   const ButtonGroup = () => {
     const offset = 16 - (searchItems.length % 3) * 8;
     return (
-      <Col key="buttonGroup" span={8} offset={offset}>
+      <Col span={8} offset={offset}>
         <div className={styles.buttonGroup}>
           <Button type="primary" htmlType="submit">
             <SearchOutlined />
@@ -112,6 +115,7 @@ const CommonSearchForm = (props: any) => {
       const { enumType } = item;
       switch (enumType) {
         case 'input': {
+          delete item.enumType;
           const { key, title, placeholder, rules, ...rest } = item;
           return (
             <Col key={key} span={8}>
@@ -127,6 +131,7 @@ const CommonSearchForm = (props: any) => {
           );
         }
         case 'select': {
+          delete item.enumType;
           const {
             key,
             title,
@@ -156,6 +161,7 @@ const CommonSearchForm = (props: any) => {
           );
         }
         case 'datePicker': {
+          delete item.enumType;
           const { key, title, placeholder, rules, ...rest } = item;
           return (
             <Col key={key} span={8}>
@@ -172,6 +178,7 @@ const CommonSearchForm = (props: any) => {
           );
         }
         case 'rangePicker': {
+          delete item.enumType;
           const { key, title, placeholder, rules, ...rest } = item;
           return (
             <Col key={key} span={8}>
@@ -187,6 +194,7 @@ const CommonSearchForm = (props: any) => {
           );
         }
         case 'cascader': {
+          delete item.enumType;
           const { key, title, placeholder, rules, ...rest } = item;
           return (
             <Col key={key} span={8}>
@@ -214,12 +222,12 @@ const CommonSearchForm = (props: any) => {
         }
       }
     });
-    resultItems.push(<ButtonGroup />);
+    resultItems.push(<ButtonGroup key="buttonGroup" />);
     return resultItems;
   };
 
   return (
-    <div className={styles.form}>
+    <div className={styles.searchForm}>
       <Form {...DefaultFormItemLayout} form={form} onFinish={onFinish}>
         <Row gutter={24}>
           <RenderForm />

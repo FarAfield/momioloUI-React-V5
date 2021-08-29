@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { message } from 'antd';
 import { request } from 'umi';
 
-const { REACT_APP_ENV } = process.env;
-const isDev = REACT_APP_ENV === 'dev';
+const { NODE_ENV } = process.env;
+const isDev = NODE_ENV === 'development';
 /**
  *  判断接口返回是否成功
  */

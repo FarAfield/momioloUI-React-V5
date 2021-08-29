@@ -7,7 +7,7 @@ import { Table } from 'antd';
  *  run  必须，配置开启run查询
  *  formValues 非必须，表单值
  *  extraValues 非必须，除表单值外的其他动态参数
- *  onTableChange  非必须，若存在排序或者筛选功能则必须  （sortValues,filterValues） => {}
+ *  handleTableChange  非必须，若存在排序或者筛选功能则必须  （sortValues,filterValues） => {}
  *  transformSorter  非必须，排序时处理函数  values => newValues,不设置则使用默认处理
  *  transformFilter 非必须，筛选时处理函数  values => newValues，不设置则使用默认处理
  */
@@ -25,7 +25,7 @@ const CommonTable = (props: any) => {
 
   const onChange = (pagination: any, filters: any, sorter: any, extra: any) => {
     // sorter支持多列排序，设置sorter:{ multiple: 1 } 标识多列排序（multiple数字越小，使用前端排序越优先，使用后端排序时也默认遵从此规则），设置为true标识单列排序
-    let sorterResult: any[] = [];
+    let sorterResult: any = [];
     if (sorter && Array.isArray(sorter)) {
       // 多列排序  sorter是个数组，此处先按照优先级排序
       sorterResult = sorter.sort((a, b) => a.column.sorter.multiple - b.column.sorter.multiple);
@@ -42,13 +42,16 @@ const CommonTable = (props: any) => {
       sorterResult = transformSorter(sorterResult);
     } else {
       // 默认转换为 key  value结构
-      // todo
+      const preSorter = [...sorterResult];
+      sorterResult = {};
+      preSorter.forEach((item) => {
+        sorterResult[item['field']] = item['order'];
+      });
     }
-
-    let filtersResult = { ...filters };
     /**
      *  filter处理。若无自定义处理函数，则默认方式处理
      */
+    let filtersResult = { ...filters };
     if (transformFilter) {
       filtersResult = transformFilter(filtersResult);
     } else {
@@ -63,7 +66,7 @@ const CommonTable = (props: any) => {
         }
       }
     }
-    handleTableChange(sorterResult, filtersResult);
+    handleTableChange?.(sorterResult, filtersResult);
     const params = {
       current: pagination.current,
       size: pagination.pageSize,
@@ -72,7 +75,7 @@ const CommonTable = (props: any) => {
       ...formValues,
       ...extraValues,
     };
-    run(params);
+    run?.(params);
   };
   const globalPageProps = {
     pageSizeOptions: [10, 20, 50, 100],
