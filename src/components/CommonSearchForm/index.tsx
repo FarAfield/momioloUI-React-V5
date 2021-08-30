@@ -14,6 +14,7 @@ import styles from './index.less';
  *  handleReset    必须，点击重置按钮触发   defaultValues => {}
  *
  *  run  非必须，配置run查询方法
+ *  mapPropsToFields  非必须，自定义默认值的回显逻辑  values => newValues
  *  transformValues  非必须，自定义表单数据处理逻辑   values => newValues
  *  extraValues  非必须，除table的排序筛选外的其他动态参数
  *  sortValues   非必须，table的排序参数
@@ -51,6 +52,7 @@ const CommonSearchForm = (props: any) => {
     handleSubmit,
     handleReset,
     run,
+    mapPropsToFields,
     transformValues,
     extraValues,
     sortValues,
@@ -63,7 +65,7 @@ const CommonSearchForm = (props: any) => {
   // 存在默认值，则赋值查询，否则只查询
   useEffect(() => {
     if (defaultValues && Object.keys(defaultValues).length) {
-      setFieldsValue(defaultValues);
+      setFieldsValue(mapPropsToFields?.(defaultValues) || defaultValues);
       handleSubmit(defaultValues);
       run?.({ ...defaultValues, ...extraValues, ...sortValues, ...filterValues });
     } else {
