@@ -9,18 +9,18 @@ import styles from './index.less';
  *  form           非必须，form实例，默认由useForm生成。若需要操控表单可设置
  *
  *  searchItems    必须，自定义渲染配置项
- *  initialValues  非必须，初始值，若存在则初始值会则自动给表单赋值且触发查询
+ *  defaultValues  非必须，默认值，若存在默认值则自动给表单赋值
  *  handleSubmit   必须，点击查询按钮触发   values => {}
- *  handleReset    必须，点击重置按钮触发   initialValues => {}
+ *  handleReset    必须，点击重置按钮触发   defaultValues => {}
  *
- *  run  非必须，配置run查询方法（一键开启）
- *  transformValues  非必须，自定义表单数据处理   values => newValues
+ *  run  非必须，配置run查询方法
+ *  transformValues  非必须，自定义表单数据处理逻辑   values => newValues
  *  extraValues  非必须，除table的排序筛选外的其他动态参数
  *  sortValues   非必须，table的排序参数
  *  filterValues  非必须，table的过滤参数
  *
  *  ======配置项属性=======
- *  enumType   非必须，指定渲染类型。若不指定，则需要提供render函数自定义
+ *  enumType   必须，指定渲染类型。若类型为custom，则需要提供render函数自定义
  *  key  必须，表单字段值
  *  title  必须，表单label
  *  placeholder  非必须
@@ -47,7 +47,7 @@ const CommonSearchForm = (props: any) => {
   const {
     form: propsForm,
     searchItems,
-    initialValues,
+    defaultValues,
     handleSubmit,
     handleReset,
     run,
@@ -60,12 +60,12 @@ const CommonSearchForm = (props: any) => {
   const [form] = propsForm || Form.useForm();
   const { setFieldsValue, resetFields } = form;
 
-  // 存在初始值，则赋值查询，否则只查询
+  // 存在默认值，则赋值查询，否则只查询
   useEffect(() => {
-    if (initialValues && Object.keys(initialValues).length) {
-      setFieldsValue(initialValues);
-      handleSubmit(initialValues);
-      run?.({ ...initialValues, ...extraValues, ...sortValues, ...filterValues });
+    if (defaultValues && Object.keys(defaultValues).length) {
+      setFieldsValue(defaultValues);
+      handleSubmit(defaultValues);
+      run?.({ ...defaultValues, ...extraValues, ...sortValues, ...filterValues });
     } else {
       handleSubmit();
       run?.({...extraValues, ...sortValues, ...filterValues})
@@ -87,9 +87,9 @@ const CommonSearchForm = (props: any) => {
 
   function onReset() {
     resetFields();
-    setFieldsValue(initialValues);
-    handleReset(initialValues);
-    run?.({ ...initialValues, ...extraValues, ...sortValues, ...filterValues });
+    setFieldsValue(defaultValues);
+    handleReset(defaultValues);
+    run?.({ ...defaultValues, ...extraValues, ...sortValues, ...filterValues });
   }
 
   const ButtonGroup = () => {
@@ -210,7 +210,9 @@ const CommonSearchForm = (props: any) => {
             </Col>
           );
         }
-        default: {
+        // 自定义渲染
+        case 'custom': {
+          delete item.enumType;
           const { key, title } = item;
           return (
             <Col key={key} span={8}>
@@ -219,6 +221,12 @@ const CommonSearchForm = (props: any) => {
               </FormItem>
             </Col>
           );
+        }
+        // 默认只提供占位
+        default: {
+          delete item.enumType;
+          const { key } = item;
+          return <Col key={key} span={8}/>
         }
       }
     });

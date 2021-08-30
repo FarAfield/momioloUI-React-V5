@@ -4,7 +4,7 @@ import { Table } from 'antd';
  *  ======组件属性=======
  *  tableProps           必须,table的属性配置
  *
- *  run  必须，配置开启run查询
+ *  run  非必须，若分页则必须，用于配置开启run查询
  *  formValues 非必须，表单值
  *  extraValues 非必须，除表单值外的其他动态参数
  *  handleTableChange  非必须，若存在排序或者筛选功能则必须  （sortValues,filterValues） => {}
