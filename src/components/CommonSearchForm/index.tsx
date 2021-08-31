@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Form, Row, Col, Button, Input, Select, DatePicker, Cascader } from 'antd';
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
+import { useUpdateEffect } from 'ahooks';
 import { transformOption } from '@/utils/support';
 import styles from './index.less';
 
@@ -9,14 +10,14 @@ import styles from './index.less';
  *  form           非必须，form实例，默认由useForm生成。若需要操控表单可设置
  *
  *  searchItems    必须，自定义渲染配置项
- *  defaultValues  非必须，默认值，若存在默认值则自动给表单赋值
- *  mapPropsToFields  非必须，自定义默认值的回显逻辑  values => newValues
  *  handleSubmit   必须，点击查询按钮触发   values => {}
  *  handleReset    必须，点击重置按钮触发   defaultValues => {}
+ *  defaultValues  非必须，默认值，若存在默认值则自动给表单赋值
+ *  mapPropsToFields  非必须，自定义默认值的回显逻辑  values => newValues
  *
  *  run  非必须，配置run查询方法
  *  transformValues  非必须，自定义表单数据处理逻辑   values => newValues
- *  extraValues  非必须，除table的排序筛选外的其他动态参数
+ *  extraValues  非必须，除table的排序筛选外的其他动态参数（动态参数的变更会自动触发查询）
  *  sortValues   非必须，table的排序参数
  *  filterValues  非必须，table的过滤参数
  *
@@ -48,21 +49,20 @@ const CommonSearchForm = (props: any) => {
   const {
     form: propsForm,
     searchItems,
-    defaultValues,
-    mapPropsToFields,
     handleSubmit,
     handleReset,
+    defaultValues,
+    mapPropsToFields,
     run,
     transformValues,
     extraValues,
     sortValues,
     filterValues,
   } = props;
-
   const [form] = propsForm || Form.useForm();
   const { setFieldsValue, resetFields } = form;
 
-  // 存在默认值，则赋值查询，否则只查询
+  // 初始自动查询，存在默认值，则赋值默认值
   useEffect(() => {
     if (defaultValues && Object.keys(defaultValues).length) {
       setFieldsValue(mapPropsToFields?.(defaultValues) || defaultValues);
@@ -73,6 +73,16 @@ const CommonSearchForm = (props: any) => {
       run?.({ ...extraValues, ...sortValues, ...filterValues });
     }
   }, []);
+
+  // 动态参数的更新会重置组件为初始状态，且触发查询
+  useUpdateEffect(() => {
+    if (extraValues && Object.keys(extraValues).length) {
+      resetFields();
+      setFieldsValue(mapPropsToFields?.(defaultValues) || defaultValues);
+      handleSubmit(defaultValues);
+      run?.({ ...defaultValues, ...extraValues, ...sortValues, ...filterValues });
+    }
+  }, [extraValues]);
 
   function onFinish(fieldsValue: any) {
     // 自定义数据处理
