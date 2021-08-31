@@ -10,11 +10,11 @@ import styles from './index.less';
  *
  *  searchItems    必须，自定义渲染配置项
  *  defaultValues  非必须，默认值，若存在默认值则自动给表单赋值
+ *  mapPropsToFields  非必须，自定义默认值的回显逻辑  values => newValues
  *  handleSubmit   必须，点击查询按钮触发   values => {}
  *  handleReset    必须，点击重置按钮触发   defaultValues => {}
  *
  *  run  非必须，配置run查询方法
- *  mapPropsToFields  非必须，自定义默认值的回显逻辑  values => newValues
  *  transformValues  非必须，自定义表单数据处理逻辑   values => newValues
  *  extraValues  非必须，除table的排序筛选外的其他动态参数
  *  sortValues   非必须，table的排序参数
@@ -49,10 +49,10 @@ const CommonSearchForm = (props: any) => {
     form: propsForm,
     searchItems,
     defaultValues,
+    mapPropsToFields,
     handleSubmit,
     handleReset,
     run,
-    mapPropsToFields,
     transformValues,
     extraValues,
     sortValues,
@@ -69,8 +69,8 @@ const CommonSearchForm = (props: any) => {
       handleSubmit(defaultValues);
       run?.({ ...defaultValues, ...extraValues, ...sortValues, ...filterValues });
     } else {
-      handleSubmit();
-      run?.({...extraValues, ...sortValues, ...filterValues})
+      handleSubmit({});
+      run?.({ ...extraValues, ...sortValues, ...filterValues });
     }
   }, []);
 
@@ -89,7 +89,7 @@ const CommonSearchForm = (props: any) => {
 
   function onReset() {
     resetFields();
-    setFieldsValue(defaultValues);
+    setFieldsValue(mapPropsToFields?.(defaultValues) || defaultValues);
     handleReset(defaultValues);
     run?.({ ...defaultValues, ...extraValues, ...sortValues, ...filterValues });
   }
@@ -228,7 +228,7 @@ const CommonSearchForm = (props: any) => {
         default: {
           delete item.enumType;
           const { key } = item;
-          return <Col key={key} span={8}/>
+          return <Col key={key} span={8} />;
         }
       }
     });
