@@ -16,10 +16,22 @@ import styles from './index.less';
  *  defaultValues   非必须，默认值，若存在默认值则自动给表单赋值。编辑时编辑数据优先
  *  mapPropsToFields  非必须，自定义默认值以及record的回显逻辑 values => newValues
  *  transformModalValues  非必须，自定义表单数据处理逻辑   values => newValues
- *  refresh  必须，新增时以refresh()调用，编辑时以refresh(true)调用
+ *  refresh  必须，新增时以refresh(true)调用，编辑时以refresh()调用
  *  urls  必须，类型为  string |  Array<string>  新增以及编辑接口url   例如：'/save'  |   ['/create','/update']
+ *  modalProps  非必须，注入到modal的属性
  *
  *  showInfo  是否打印必要信息，默认false
+ *
+ *  ======配置项属性=======
+ *  enumType   必须，指定渲染类型。若类型为custom，则需要提供render函数自定义
+ *  key  必须，表单字段值
+ *  title  必须，表单label
+ *  placeholder  非必须
+ *  rules  非必须
+ *  ...rest  其他各种可扩展的属性
+ *
+ *  selectOptions  必须，类型为select配置options
+ *  keyValue  必须，类型为select配置options的渲染方法
  */
 const DefaultFormItemLayout = {
   labelCol: {
@@ -45,6 +57,8 @@ const CommonModalForm = (props: any) => {
     transformModalValues,
     refresh,
     urls,
+    modalProps,
+    showInfo,
   } = props;
   const [form] = propsForm || Form.useForm();
   const { setFieldsValue, resetFields } = form;
@@ -82,8 +96,10 @@ const CommonModalForm = (props: any) => {
     } else {
       currentUrl = Array.isArray(urls) && urls.length === 2 ? urls[0] : urls;
     }
-    console.log(`当前执行操作：${isEdit ? '编辑' : '新增'}`, ` 请求路径：${currentUrl}`);
-    console.log('请求参数', finallyValues);
+    if (showInfo) {
+      console.log(`当前执行操作：${isEdit ? '编辑' : '新增'}`, ` 请求路径：${currentUrl}`);
+      console.log('请求参数', finallyValues);
+    }
     setLoading(true);
     const request = createService(currentUrl, 'post');
     const response = await request(finallyValues);
@@ -233,6 +249,7 @@ const CommonModalForm = (props: any) => {
       onCancel={onCancel}
       footer={false}
       closable
+      {...modalProps}
     >
       <Form form={form} onFinish={onFinish} {...DefaultFormItemLayout}>
         <RenderForm />
