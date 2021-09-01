@@ -130,7 +130,12 @@ const CommonModalForm = (props: any) => {
 
   const RenderForm = () => {
     const resultItems = formItems.map((item: any) => {
-      const { enumType } = item;
+      const { enumType, readOnly = [false, false], hide } = item;
+      const disabled = isEdit ? readOnly[1] : readOnly[0];
+      if (hide) {
+        return null;
+      }
+      delete item.readOnly;
       switch (enumType) {
         case 'input': {
           delete item.enumType;
@@ -141,6 +146,7 @@ const CommonModalForm = (props: any) => {
                 autoComplete="off"
                 allowClear
                 placeholder={placeholder || '请输入'}
+                disabled={disabled}
                 {...rest}
               />
             </FormItem>
@@ -167,6 +173,7 @@ const CommonModalForm = (props: any) => {
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
                 getPopupContainer={(triggerNode) => triggerNode.parentNode}
+                disabled={disabled}
                 {...rest}
               >
                 {transformOption(selectOptions, keyValue)}
@@ -184,6 +191,7 @@ const CommonModalForm = (props: any) => {
                 placeholder={placeholder || '请选择'}
                 style={{ width: '100%' }}
                 getPopupContainer={(trigger) => trigger.parentNode}
+                disabled={disabled}
                 {...rest}
               />
             </FormItem>
@@ -198,6 +206,7 @@ const CommonModalForm = (props: any) => {
                 allowClear
                 placeholder={placeholder || ['开始时间', '结束时间']}
                 getPopupContainer={(trigger) => trigger.parentNode}
+                disabled={disabled}
                 {...rest}
               />
             </FormItem>
@@ -213,6 +222,7 @@ const CommonModalForm = (props: any) => {
                 placeholder={placeholder || '请选择'}
                 expandTrigger="hover"
                 getPopupContainer={(trigger) => trigger.parentNode}
+                disabled={disabled}
                 {...rest}
               />
             </FormItem>
