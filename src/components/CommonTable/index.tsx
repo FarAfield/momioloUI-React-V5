@@ -2,39 +2,41 @@ import { Table } from 'antd';
 
 /**
  *  ======组件属性=======
- *  tableProps           必须,table的属性配置
- *
- *  run  非必须，若分页则必须，用于配置开启run查询
- *  formValues 非必须，表单值
- *  extraValues 非必须，除表单值外的其他动态参数
- *  handleTableChange  非必须，若存在排序或者筛选功能则必须  （sortValues,filterValues） => {}
- *  transformSorter  非必须，排序时处理函数  values => newValues,不设置则使用默认处理
+ *  （初级用法）
+ *  tableProps          必须,table的属性配置
+ *  handleTableChange   非必须，使用了筛选以及排序功能或者不开启run查询时则必须 （pagination，filterValues，sortValues） => {}
  *  transformFilter 非必须，筛选时处理函数  values => newValues，不设置则使用默认处理
+ *  transformSorter  非必须，排序时处理函数  values => newValues,不设置则使用默认处理
+ *  （中级用法）
+ *  run  非必须，执行函数
+ *  formValues 非必须，表单值
+ *  （高级用法）
+ *  dynamicValues  非必须，动态参数
  */
 
 const CommonTable = (props: any) => {
   const {
     tableProps,
+    handleTableChange,
+    transformFilter,
+    transformSorter,
     run,
     formValues,
-    extraValues,
-    handleTableChange,
-    transformSorter,
-    transformFilter,
+    dynamicValues,
   } = props;
 
-  const onChange = (pagination: any, filters: any, sorter: any, extra: any) => {
+  const onChange = (pagination: any, filters: any, sorter: any) => {
     // sorter支持多列排序，设置sorter:{ multiple: 1 } 标识多列排序（multiple数字越小，使用前端排序越优先，使用后端排序时也默认遵从此规则），设置为true标识单列排序
     let sorterResult: any = [];
     if (sorter && Array.isArray(sorter)) {
-      // 多列排序  sorter是个数组，此处先按照优先级排序
+      // 多列排序  sorter是个数组，先按照优先级排序
       sorterResult = sorter.sort((a, b) => a.column.sorter.multiple - b.column.sorter.multiple);
     } else if (sorter && Object.keys(sorter).length) {
       // 单列排序  sorter是个对象
       sorterResult = [sorter];
     }
     // 取消多列或者单列排序时，也会存在一个sorter,但是order为undefined，因此过滤且不参与排序
-    sorterResult = sorterResult.filter((i: any) => i.order);
+    sorterResult = sorterResult.filter((i: any) => !!i.order);
     /**
      * sorter处理。若无自定义处理函数，则默认方式处理
      */
@@ -66,26 +68,27 @@ const CommonTable = (props: any) => {
         }
       }
     }
-    handleTableChange?.(sorterResult, filtersResult);
-    const params = {
+    handleTableChange?.(pagination, filtersResult, sorterResult);
+    const runParams = {
       current: pagination.current,
       size: pagination.pageSize,
-      ...sorterResult,
       ...filtersResult,
+      ...sorterResult,
       ...formValues,
-      ...extraValues,
+      ...dynamicValues,
     };
-    run?.(params);
+    run?.(runParams);
   };
+  // 全局分页属性
   const globalPageProps = {
-    pageSizeOptions: [10, 20, 50, 100],
+    pageSizeOptions: ['10', '20', '50', '100'],
     showQuickJumper: true,
     showSizeChanger: true,
     showTotal: (total: number) => `总共${total || 0}条记录`,
     simple: false,
     size: 'default',
   };
-  // 注入全局分页属性, 如果原配置pagination不存在或者为false，说明无需配置分页参数
+  // 注入全局分页属性
   const tableFinallyProps = {
     ...tableProps,
     pagination: !tableProps.pagination ? false : { ...globalPageProps, ...tableProps.pagination },
@@ -93,3 +96,7 @@ const CommonTable = (props: any) => {
   return <Table onChange={onChange} {...tableFinallyProps} />;
 };
 export default CommonTable;
+
+CommonTable.defaultProps = {
+  dynamicValues: {},
+};

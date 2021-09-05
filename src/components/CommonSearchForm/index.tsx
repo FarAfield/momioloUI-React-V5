@@ -1,25 +1,22 @@
 import { useEffect } from 'react';
 import { Form, Row, Col, Button, Input, Select, DatePicker, Cascader } from 'antd';
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
-import { useUpdateEffect } from 'ahooks';
 import { transformOption } from '@/utils/support';
 import styles from './index.less';
 
 /**
  *  ======组件属性=======
- *  form           非必须，form实例，默认由useForm生成。若需要操控表单可设置
- *
+ *  （初级用法）
  *  searchItems    必须，自定义渲染配置项
- *  handleSubmit   必须，点击查询按钮触发   values => {}
- *  handleReset    必须，点击重置按钮触发   defaultValues => {}
- *  defaultValues  非必须，默认值，若存在默认值则自动给表单赋值
- *  mapPropsToFields  非必须，自定义默认值的回显逻辑  values => newValues
- *
- *  run  非必须，配置run查询方法
- *  transformValues  非必须，自定义表单数据处理逻辑   values => newValues
- *  extraValues  非必须，除table的排序筛选外的其他动态参数（动态参数的变更会自动触发查询）
+ *  handleSearch   必须，点击查询或者重置按钮触发   values => {}
+ *  transformValues  非必须，自定义表单数据（包括默认值）处理逻辑   values => newValues
+ *  defaultValues  非必须，表单默认值（依据表单值进行设置）
+ *  （中级用法）
+ *  run  非必须，执行函数
  *  sortValues   非必须，table的排序参数
  *  filterValues  非必须，table的过滤参数
+ *  （高级用法）
+ *  dynamicValues  非必须，动态参数（动态参数的变更会自动触发查询且重置表单为默认值）借助useUpdateEffect更新动态值
  *
  *  ======配置项属性=======
  *  enumType   必须，指定渲染类型。若类型为custom，则需要提供render函数自定义
@@ -47,61 +44,41 @@ const { RangePicker } = DatePicker;
 
 const CommonSearchForm = (props: any) => {
   const {
-    form: propsForm,
     searchItems,
-    handleSubmit,
-    handleReset,
-    defaultValues,
-    mapPropsToFields,
-    run,
+    handleSearch,
     transformValues,
-    extraValues,
+    defaultValues,
+    run,
     sortValues,
     filterValues,
+    dynamicValues,
   } = props;
-  const [form] = propsForm || Form.useForm();
+  const [form] = Form.useForm();
   const { setFieldsValue, resetFields } = form;
 
-  // 初始自动查询，存在默认值，则赋值默认值
   useEffect(() => {
-    if (defaultValues && Object.keys(defaultValues).length) {
-      setFieldsValue(mapPropsToFields?.(defaultValues) || defaultValues);
-      handleSubmit(defaultValues);
-      run?.({ ...defaultValues, ...extraValues, ...sortValues, ...filterValues });
-    } else {
-      handleSubmit({});
-      run?.({ ...extraValues, ...sortValues, ...filterValues });
-    }
-  }, []);
-
-  // 动态参数的更新会重置组件为初始状态，且触发查询
-  useUpdateEffect(() => {
-    if (extraValues && Object.keys(extraValues).length) {
-      resetFields();
-      setFieldsValue(mapPropsToFields?.(defaultValues) || defaultValues);
-      handleSubmit(defaultValues);
-      run?.({ ...defaultValues, ...extraValues, ...sortValues, ...filterValues });
-    }
-  }, [extraValues]);
+    onReset();
+  }, [dynamicValues]);
 
   function onFinish(fieldsValue: any) {
-    // 自定义数据处理
-    const values = transformValues?.(fieldsValue) || fieldsValue;
+    let values = { ...fieldsValue };
     // 去空格处理
     for (const v in values) {
       if (typeof values[v] === 'string') {
         values[v] = values[v]?.trim();
       }
     }
-    handleSubmit(values);
-    run?.({ ...values, ...extraValues, ...sortValues, ...filterValues });
+    // 自定义数据处理
+    values = transformValues?.(values) || values;
+    handleSearch(values);
+    run?.({ ...values, ...sortValues, ...filterValues, ...dynamicValues });
   }
 
+  // 重置组件为初始状态
   function onReset() {
     resetFields();
-    setFieldsValue(mapPropsToFields?.(defaultValues) || defaultValues);
-    handleReset(defaultValues);
-    run?.({ ...defaultValues, ...extraValues, ...sortValues, ...filterValues });
+    setFieldsValue(defaultValues);
+    onFinish(defaultValues);
   }
 
   const ButtonGroup = () => {
@@ -158,8 +135,8 @@ const CommonSearchForm = (props: any) => {
               <FormItem name={key} label={title} rules={rules}>
                 <Select
                   allowClear
-                  showSearch
                   placeholder={placeholder || '请选择'}
+                  showSearch
                   filterOption={(input: any, option: any) =>
                     option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
@@ -198,6 +175,7 @@ const CommonSearchForm = (props: any) => {
                 <RangePicker
                   allowClear
                   placeholder={placeholder || ['开始时间', '结束时间']}
+                  style={{ width: '100%' }}
                   getPopupContainer={(trigger) => trigger.parentNode}
                   {...rest}
                 />
@@ -245,7 +223,6 @@ const CommonSearchForm = (props: any) => {
     resultItems.push(<ButtonGroup key="buttonGroup" />);
     return resultItems;
   };
-
   return (
     <div className={styles.searchForm}>
       <Form {...DefaultFormItemLayout} form={form} onFinish={onFinish}>
@@ -257,3 +234,10 @@ const CommonSearchForm = (props: any) => {
   );
 };
 export default CommonSearchForm;
+
+CommonSearchForm.defaultProps = {
+  defaultValues: {},
+  sortValues: {},
+  filterValues: {},
+  dynamicValues: {},
+};
