@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { message } from 'antd';
 import { request } from 'umi';
 
@@ -143,4 +143,29 @@ export const transformResponse = (response: any, showError: boolean = false) => 
     message.error(response?.statusMessage);
   }
   return null;
+};
+
+export const useResource = (
+  service: any,
+  { params = {}, desp = [], defaultData = null, formatResult }: any,
+) => {
+  const [data, setData] = useState(defaultData);
+  const [loading, setLoading] = useState(false);
+  async function fetchData(p: any) {
+    setLoading(true);
+    const response = await service(p);
+    setData(
+      formatResult?.(transformResponse(response) || defaultData) ||
+        transformResponse(response) ||
+        defaultData,
+    );
+    setLoading(false);
+  }
+  useEffect(() => {
+    fetchData(params);
+  }, [desp]);
+  return {
+    data,
+    loading,
+  };
 };
