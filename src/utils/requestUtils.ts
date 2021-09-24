@@ -163,9 +163,15 @@ export const useResource = (
   }
   useEffect(() => {
     fetchData(params);
-  }, [desp]);
+  }, desp);
+
+  function refresh() {
+    fetchData(params);
+  }
+
   return {
     data,
     loading,
+    refresh,
   };
 };
